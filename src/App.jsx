@@ -1,44 +1,36 @@
-import { useEffect, useRef, useState } from 'react'
-import './App.css'
+import './App.css';
+import { useEffect, useState } from 'react';
 import TodoItem from './components/TodoItem';
+import useTodos from './hooks/useTodos';
 
-function App() {
+const App = () => {
 
-  const inputRef = useRef();
+  const [todoItem, setTodoItem] = useState('');
+  
+  const {todoList, addTodo, deleteTodo, toggleChecked} = useTodos();
 
-  const [todoList, setTodoList] = useState([]);
-  const [newTodo, setNewTodo] = useState('');
-
-  const handleInputType = (e) => {
-    setNewTodo(e.target.value);
+  const handleInputChange = (e) => {
+    setTodoItem(e.target.value);
   }
 
   const handleAddTodo = () => {
-    if (newTodo !== '') {
-      setTodoList(prev => [...prev, { text: newTodo, checked: false }]);
-      setNewTodo('');
-    }
-  }
+    addTodo(todoItem);  
+    setTodoItem('');
+  }    
 
   useEffect(() => {
     console.log(todoList);
-    inputRef.current.focus();
-  }, [todoList]);
+  }, [todoList])
 
   return (
-    <>
-      <input
-        ref={inputRef}
-        type="text"
-        value={newTodo}
-        onChange={(e) => handleInputType(e)}
-      />
+    <div>
+      <input onChange={handleInputChange} type="text" value={todoItem} />
       <button onClick={handleAddTodo}>Add Todo</button>
-      {todoList.map((item, index) => (
-        <TodoItem key={index} id={index} item={item} setTodoList={setTodoList} />
+      {todoList.map(item => (
+        <TodoItem key={item.id} item={item} toggleChecked={toggleChecked} onDelete={deleteTodo}  />
       ))}
-    </>
-  )
+    </div>
+  );
 }
 
 export default App;
